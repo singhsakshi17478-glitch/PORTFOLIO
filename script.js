@@ -1,4 +1,69 @@
 document.addEventListener('DOMContentLoaded', () => {
+
+    // ── Particle Background ───────────────────────────────────────
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+
+    const particles = [];
+    const count = 60;
+
+    for (let i = 0; i < count; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            r: Math.random() * 5 + 2,
+            dx: (Math.random() - 0.5) * 0.2,
+            dy: (Math.random() - 0.5) * 0.2,
+            alpha: Math.random() * 0.4 + 0.4
+        });
+    }
+
+    function drawParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw connecting lines
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 130) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = `rgba(0, 33, 71, ${0.35 * (1 - dist / 130)})`;
+                    ctx.lineWidth = 1.5;
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.stroke();
+                }
+            }
+        }
+
+        // Draw dots
+        particles.forEach(p => {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(0, 33, 71, ${p.alpha})`;
+            ctx.fill();
+
+            p.x += p.dx;
+            p.y += p.dy;
+
+            if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+            if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+        });
+
+        requestAnimationFrame(drawParticles);
+    }
+
+    drawParticles();
     const navbar = document.getElementById('navbar');
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
     const navLinks = document.querySelectorAll('.nav-links a');
@@ -64,13 +129,43 @@ document.addEventListener('DOMContentLoaded', () => {
         navLinksEl.classList.toggle('mobile-open');
     });
 
+    // ── Video Modal ───────────────────────────────────────────────
+    const learnMoreBtn = document.getElementById('learn-more-btn');
+    const videoModal = document.getElementById('video-modal');
+    const videoModalOverlay = document.getElementById('video-modal-overlay');
+    const videoClose = document.getElementById('video-close');
+    const introVideo = document.getElementById('intro-video');
+
+    learnMoreBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        videoModal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        introVideo.play();
+    });
+
+    function closeVideoModal() {
+        videoModal.classList.remove('open');
+        document.body.style.overflow = '';
+        introVideo.pause();
+        introVideo.currentTime = 0;
+    }
+
+    videoClose.addEventListener('click', closeVideoModal);
+    videoModalOverlay.addEventListener('click', closeVideoModal);
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && videoModal.classList.contains('open')) {
+            closeVideoModal();
+        }
+    });
+
     // ── Certificate Lightbox ──────────────────────────────────────
     const certificates = [
-        { title: 'Certificate 1', src: 'cert1.jpg.jpeg' },
-        { title: 'Certificate 2', src: 'cert2.jpg.jpeg' },
-        { title: 'Certificate 3', src: 'cert3.jpg.jpeg' },
-        { title: 'Certificate 4', src: 'cert4.jpg.jpeg' },
-        { title: 'Certificate 5', src: 'cert5.jpg.jpeg', rotate: -90 },
+        { title: 'Python Certificate 1', src: 'cert1.jpg.jpeg' },
+        { title: 'Python Certificate 2', src: 'cert2.jpg.jpeg' },
+        { title: 'DSA Certificate', src: 'cert3.jpg.jpeg' },
+        { title: 'Reverse Code Certificate', src: 'cert4.jpg.jpeg' },
+        { title: 'Code Debugging', src: 'cert5.jpg.jpeg' },
     ];
 
     let currentCertIndex = 0;
