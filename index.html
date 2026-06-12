@@ -1,24 +1,35 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sakshi | Portfolio</title>
     <meta name="description" content="Professional portfolio of Sakshi, a BTech CSE student specializing in AI & ML.">
-    <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Animated Background Canvas -->
+
+    <!-- ── CSS Floating Orbs (always visible) ── -->
+    <div class="bg-orbs">
+        <div class="bg-orb bg-orb-1"></div>
+        <div class="bg-orb bg-orb-2"></div>
+        <div class="bg-orb bg-orb-3"></div>
+        <div class="bg-orb bg-orb-4"></div>
+        <div class="bg-orb bg-orb-5"></div>
+    </div>
+
+    <!-- ── Particle Canvas ── -->
     <canvas id="bg-canvas"></canvas>
+
+    <!-- ── Navbar ── -->
     <nav id="navbar">
-        <div class="container container-nav">
-            <div class="logo">Sakshi</div>
-            <ul class="nav-links">
-                <li><a href="#home" class="active">Home</a></li>
+        <div class="nav-inner">
+            <div class="logo">Sakshi<span class="logo-dot">.</span></div>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="#home">Home</a></li>
                 <li><a href="#about">About</a></li>
                 <li><a href="#projects">Projects</a></li>
                 <li><a href="#skills">Skills</a></li>
@@ -26,340 +37,326 @@
                 <li><a href="#achievements">Achievements</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
-            <div class="mobile-menu-btn" id="mobile-menu-btn">
-                <span></span>
-                <span></span>
-                <span></span>
+            <div class="nav-right">
+                <button class="btn-resume-nav" id="download-resume-btn">📄 Resume</button>
+                <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle menu">
+                    <span></span><span></span><span></span>
+                </button>
             </div>
         </div>
     </nav>
 
-    <header id="home" class="active">
+    <!-- ── Hero ── -->
+    <section id="home" class="hero">
         <div class="hero-overlay"></div>
-        <div class="container hero-content">
-            <div class="hero-text">
-                <h1>Sakshi</h1>
-                <h2>BTech CSE (AI & ML) Student</h2>
-                <p>“Focused on building knowledge and skills in Artificial Intelligence and Machine Learning”</p>
-                <a href="#about" class="btn btn-primary" id="learn-more-btn">Learn More</a>
+        <div class="hero-body">
+            <p class="hero-eyebrow reveal">Hello, I'm</p>
+            <h1 class="hero-name reveal">Sakshi Singh</h1>
+            <h2 class="hero-role reveal">BTech CSE &nbsp;·&nbsp; AI &amp; ML</h2>
+            <p class="hero-quote reveal">"Focused on building knowledge and skills in Artificial Intelligence and Machine Learning"</p>
+            <div class="hero-btns reveal">
+                <a href="#projects" class="btn btn-white">View Work</a>
+                <button class="btn btn-ghost btn-ghost-pulse" id="watch-intro-btn">▶ Watch Intro</button>
+                <button class="btn btn-ghost" id="download-resume-btn-hero">📄 Download Resume</button>
+            </div>
+            <div class="hero-scroll-hint">
+                <span></span>
+                <p>Scroll to explore</p>
             </div>
         </div>
-    </header>
+    </section>
 
-    <main>
-        <section id="about" class="section">
-            <div class="container">
-                <div class="section-header">
-                    <h2>About Me</h2>
-                    <div class="underline"></div>
-                </div>
-                <div class="about-grid">
-                    <div class="about-image">
-                        <img src="profile.jpg" alt="Sakshi Portfolio Picture">
-                    </div>
-                    <div class="about-text">
-                        <p>I am a Computer Science Engineering student specializing in Artificial Intelligence and Machine Learning with Xebia. I am passionate about learning emerging technologies, strengthening my problem-solving abilities, and applying my knowledge to real-world challenges.</p>
-                    </div>
-                </div>
-                <div class="about-details">
-                    <div class="about-detail-card">
-                        <img src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=400&q=80" alt="School" class="detail-card-img">
-                        <h3>🎓 Schooling</h3>
-                        <p><strong>Shanti Niketan Public School</strong></p>
-                        <p>Completed schooling with a strong academic foundation.</p>
-                    </div>
-                    <div class="about-detail-card">
-                        <img src="https://tse4.mm.bing.net/th/id/OIP._6wLV4rXitK1_xlkCLi6-QHaDS?w=773&h=343&rs=1&pid=ImgDetMain&o=7&rm=3" alt="College" class="detail-card-img">
-                        <h3>🎓 Higher Education</h3>
-                        <p><strong>BTech CSE — AI & ML with Xebia</strong></p>
-                        <p>Currently pursuing specialization in Artificial Intelligence and Machine Learning.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="projects" class="section bg-light">
-            <div class="container">
-                <div class="section-header">
-                    <h2>Projects</h2>
-                    <div class="underline"></div>
-                </div>
-                <div class="project-grid">
-                    <div class="project-card">
-                        <div class="project-img">
-                            <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80" alt="Restaurant Menu">
-                        </div>
-                        <div class="project-info">
-                            <h3>Restaurant Menu Website</h3>
-                            <p>A fully designed restaurant menu website showcasing food items, categories, and an interactive layout built during AI tool classes.</p>
-                            <div class="tags">
-                                <span class="tag">HTML</span>
-                                <span class="tag">CSS</span>
-                                <span class="tag">JavaScript</span>
-                            </div>
-                            <div class="project-btns">
-                                <a href="https://restuarent-menu-20.vercel.app/" class="btn btn-primary" target="_blank">🌐 View Project</a>
-                                <a href="https://github.com/singhsakshi17478-glitch/RESTUARENT-MENU-20" class="btn btn-outline" target="_blank">🐙 GitHub</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="project-card">
-                        <div class="project-img">
-                            <img src="https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?w=600&q=80" alt="Quiz App">
-                        </div>
-                        <div class="project-info">
-                            <h3>Quiz Website</h3>
-                            <p>An interactive quiz web application with multiple questions, score tracking, and a clean user interface built during AI tool classes.</p>
-                            <div class="tags">
-                                <span class="tag">HTML</span>
-                                <span class="tag">CSS</span>
-                                <span class="tag">JavaScript</span>
-                            </div>
-                            <div class="project-btns">
-                                <a href="https://quiz-seven-blush.vercel.app/" class="btn btn-primary" target="_blank">🌐 View Project</a>
-                                <a href="https://github.com/singhsakshi17478-glitch/QUIZ" class="btn btn-outline" target="_blank">🐙 GitHub</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="project-card">
-                        <div class="project-img">
-                            <img src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=600&q=80" alt="Library Website">
-                        </div>
-                        <div class="project-info">
-                            <h3>Library Website</h3>
-                            <p>A library management website featuring book listings, search functionality, and a user-friendly interface built during AI tool classes.</p>
-                            <div class="tags">
-                                <span class="tag">HTML</span>
-                                <span class="tag">CSS</span>
-                                <span class="tag">JavaScript</span>
-                            </div>
-                            <div class="project-btns">
-                                <a href="https://lms-2-b.vercel.app/" class="btn btn-primary" target="_blank">🌐 View Project</a>
-                                <a href="https://github.com/singhsakshi17478-glitch/LMS-2B" class="btn btn-outline" target="_blank">🐙 GitHub</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="project-card">
-                        <div class="project-img">
-                            <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80" alt="E-Commerce Website">
-                        </div>
-                        <div class="project-info">
-                            <h3>E-Commerce Website</h3>
-                            <p>A fully functional e-commerce website with product listings, shopping cart, and a clean modern interface built during AI tool classes.</p>
-                            <div class="tags">
-                                <span class="tag">HTML</span>
-                                <span class="tag">CSS</span>
-                                <span class="tag">JavaScript</span>
-                            </div>
-                            <div class="project-btns">
-                                <a href="https://ecommerce-website-tau-rosy.vercel.app" class="btn btn-primary" target="_blank">🌐 View Project</a>
-                                <a href="https://github.com/singhsakshi17478-glitch/ecommerce-website" class="btn btn-outline" target="_blank">🐙 GitHub</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="skills" class="section">
-            <div class="container">
-                <div class="section-header">
-                    <h2>Skills</h2>
-                    <div class="underline"></div>
-                </div>
-                <div class="skills-grid">
-                    <div class="skill-item">
-                        <div class="skill-img">
-                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python">
-                        </div>
-                        <span class="skill-name">Python</span>
-                    </div>
-                    <div class="skill-item">
-                        <div class="skill-img">
-                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tensorflow/tensorflow-original.svg" alt="Machine Learning">
-                        </div>
-                        <span class="skill-name">Machine Learning (Basics)</span>
-                    </div>
-                    <div class="skill-item">
-                        <div class="skill-img">
-                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML">
-                        </div>
-                        <span class="skill-name">HTML</span>
-                    </div>
-                    <div class="skill-item">
-                        <div class="skill-img">
-                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" alt="CSS">
-                        </div>
-                        <span class="skill-name">CSS</span>
-                    </div>
-                    <div class="skill-item">
-                        <div class="skill-img">
-                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" alt="JavaScript">
-                        </div>
-                        <span class="skill-name">JavaScript</span>
-                    </div>
-                    <div class="skill-item">
-                        <div class="skill-img">
-                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" alt="GitHub">
-                        </div>
-                        <span class="skill-name">GitHub</span>
-                    </div>
-                    <div class="skill-item">
-                        <div class="skill-img">🧩</div>
-                        <span class="skill-name">Data Structures (Fundamentals)</span>
-                    </div>
-                    <div class="skill-item">
-                        <div class="skill-img">🧠</div>
-                        <span class="skill-name">Problem Solving</span>
-                    </div>
-                    <div class="skill-item">
-                        <div class="skill-img">📊</div>
-                        <span class="skill-name">Analytical Thinking</span>
-                    </div>
-                    <div class="skill-item">
-                        <div class="skill-img">🗣️</div>
-                        <span class="skill-name">Communication</span>
-                    </div>
-                    <div class="skill-item">
-                        <div class="skill-img">🤝</div>
-                        <span class="skill-name">Teamwork</span>
-                    </div>
-                    <div class="skill-item">
-                        <div class="skill-img">📝</div>
-                        <span class="skill-name">Documentation & Visualization</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="education" class="section bg-light">
-            <div class="container">
-                <div class="section-header">
-                    <h2>Education</h2>
-                    <div class="underline"></div>
-                </div>
-                <div class="edu-grid">
-                    <div class="edu-card">
-                        <img src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&q=80" alt="School" class="edu-card-img">
-                        <div class="edu-icon">🏫</div>
-                        <h3>Shanti Niketan Public School</h3>
-                        <p class="edu-subtitle">Schooling</p>
-                        <p class="edu-desc">Completed schooling with a strong academic foundation in science and mathematics.</p>
-                    </div>
-                    <div class="edu-card">
-                        <img src="https://tse4.mm.bing.net/th/id/OIP._6wLV4rXitK1_xlkCLi6-QHaDS?w=773&h=343&rs=1&pid=ImgDetMain&o=7&rm=3" alt="College" class="edu-card-img">
-                        <div class="edu-icon">🎓</div>
-                        <h3>BTech Computer Science Engineering</h3>
-                        <p class="edu-subtitle">Specialization: AI & ML with Xebia</p>
-                        <p class="edu-desc">Academic focus on advanced computing paradigms and industrial AI applications.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="achievements" class="section">
-            <div class="container">
-                <div class="section-header">
-                    <h2>Achievements / Learning</h2>
-                    <div class="underline"></div>
-                </div>
-                <div class="achieve-list">
-                    <div class="achieve-item">
-                        <img src="https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=800&q=80" alt="AI ML" class="achieve-img">
-                        <h3>AI & ML Specialization with Xebia</h3>
-                        <p>Intensive specialization program focusing on deep learning, neural networks, and industrial ML practices.</p>
-                    </div>
-                    <div class="achieve-item">
-                        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&q=80" alt="Learning" class="achieve-img">
-                        <h3>Coursework & Continuous Learning</h3>
-                        <p>Engaged in ongoing professional development through various academic modules in programming and technology.</p>
-                    </div>
-                </div>
-
-                <!-- Certificates Section -->
-                <div class="cert-section">
-                    <h3 class="cert-heading">My Certificates</h3>
-                    <p class="cert-subtext">Click on any certificate to view it in full.</p>
-                    <div class="cert-grid">
-                        <div class="cert-card" data-index="0">
-                            <div class="cert-icon">🏆</div>
-                            <p>Python Certificate 1<br><span>Achievement</span></p>
-                            <button class="btn-view-cert">View Certificate</button>
-                        </div>
-                        <div class="cert-card" data-index="1">
-                            <div class="cert-icon">🎓</div>
-                            <p>Python Certificate 2<br><span>Achievement</span></p>
-                            <button class="btn-view-cert">View Certificate</button>
-                        </div>
-                        <div class="cert-card" data-index="2">
-                            <div class="cert-icon">📊</div>
-                            <p>DSA Certificate<br><span>Achievement</span></p>
-                            <button class="btn-view-cert">View Certificate</button>
-                        </div>
-                        <div class="cert-card" data-index="3">
-                            <div class="cert-icon">🌟</div>
-                            <p>Reverse Code Certificate<br><span>Achievement</span></p>
-                            <button class="btn-view-cert">View Certificate</button>
-                        </div>
-                        <div class="cert-card" data-index="4">
-                            <div class="cert-icon">🎖</div>
-                            <p>Code Debugging<br><span>Achievement</span></p>
-                            <button class="btn-view-cert">View Certificate</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Certificate Lightbox Modal -->
-        <div id="cert-modal" class="cert-modal" role="dialog" aria-modal="true" aria-label="Certificate Viewer">
-            <div class="cert-modal-overlay" id="cert-modal-overlay"></div>
-            <div class="cert-modal-box">
-                <button class="cert-close" id="cert-close" title="Close">&#10005;</button>
-                <div class="cert-modal-img-wrap">
-                    <img id="cert-modal-img" src="" alt="Certificate" />
-                    <p id="cert-modal-placeholder" class="cert-placeholder-text">
-                        📄 Certificate image will appear here.<br>
-                        <small>Add your certificate images named <strong>cert1.jpg</strong>, <strong>cert2.jpg</strong>, <strong>cert3.jpg</strong> to this folder.</small>
-                    </p>
-                </div>
-                <div class="cert-modal-footer">
-                    <button class="cert-nav-btn" id="cert-prev">&#8592; Previous</button>
-                    <span class="cert-counter" id="cert-counter">1 / 3</span>
-                    <button class="cert-nav-btn" id="cert-next">Next &#8594;</button>
-                </div>
-            </div>
-        </div>
-
-        <section id="contact" class="section bg-light">
-            <div class="container contact-container">
-                <div class="section-header">
-                    <h2>Contact</h2>
-                    <div class="underline"></div>
-                </div>
-                <div class="contact-content">
-                    <p class="contact-msg">“I am open to academic collaboration, learning opportunities, and skill development.”</p>
-                    <div class="contact-form">
-                        <img src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=900&q=80" alt="Contact" class="contact-banner">
-                        <p>Feel free to reach out for collaboration.</p>
-                        <div class="contact-links">
-                            <a href="mailto:singhsakshi17478@gmail.com" class="btn btn-outline">📧 Gmail</a>
-                            <a href="https://www.linkedin.com/in/sakshi-singh-15a174375" class="btn btn-outline" target="_blank">💼 LinkedIn</a>
-                            <a href="https://github.com/singhsakshi17478-glitch" class="btn btn-outline" target="_blank">🐙 GitHub</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer>
+    <!-- ── About ── -->
+    <section id="about" class="section">
         <div class="container">
-            <p>&copy; Sakshi | Portfolio</p>
+            <div class="section-label reveal">01 — About</div>
+            <h2 class="section-title reveal">About Me</h2>
+            <div class="about-grid">
+                <div class="about-photo reveal">
+                    <img src="profile.jpg" alt="Sakshi Singh">
+                    <div class="photo-ring"></div>
+                </div>
+                <div class="about-body">
+                    <p class="about-intro reveal">I am a Computer Science Engineering student specializing in <strong>Artificial Intelligence and Machine Learning</strong> with Xebia. Passionate about learning emerging technologies, strengthening problem-solving abilities, and applying knowledge to real-world challenges.</p>
+                    <div class="about-cards reveal">
+                        <div class="about-mini-card">
+                            <span class="mini-icon">🏫</span>
+                            <div>
+                                <strong>Shanti Niketan Public School</strong>
+                                <p>Strong academic foundation in Science &amp; Mathematics</p>
+                            </div>
+                        </div>
+                        <div class="about-mini-card">
+                            <span class="mini-icon">🎓</span>
+                            <div>
+                                <strong>BTech CSE — AI &amp; ML with Xebia</strong>
+                                <p>Currently pursuing specialization in AI and Machine Learning</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Projects ── -->
+    <section id="projects" class="section section-alt">
+        <div class="container">
+            <div class="section-label reveal">02 — Work</div>
+            <h2 class="section-title reveal">Projects</h2>
+            <div class="project-grid">
+
+                <div class="project-card reveal">
+                    <div class="project-img">
+                        <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80" alt="Restaurant Menu">
+                        <div class="project-overlay">
+                            <a href="https://restuarent-menu-20.vercel.app/" class="project-link-btn" target="_blank">🌐 Live</a>
+                            <a href="https://github.com/singhsakshi17478-glitch/RESTUARENT-MENU-20" class="project-link-btn" target="_blank">🐙 Code</a>
+                        </div>
+                    </div>
+                    <div class="project-body">
+                        <h3>Restaurant Menu Website</h3>
+                        <p>Fully designed menu website showcasing food items, categories, and an interactive layout.</p>
+                        <div class="tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span></div>
+                    </div>
+                </div>
+
+                <div class="project-card reveal">
+                    <div class="project-img">
+                        <img src="https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?w=600&q=80" alt="Quiz App">
+                        <div class="project-overlay">
+                            <a href="https://quiz-seven-blush.vercel.app/" class="project-link-btn" target="_blank">🌐 Live</a>
+                            <a href="https://github.com/singhsakshi17478-glitch/QUIZ" class="project-link-btn" target="_blank">🐙 Code</a>
+                        </div>
+                    </div>
+                    <div class="project-body">
+                        <h3>Quiz Website</h3>
+                        <p>Interactive quiz app with multiple questions, score tracking, and clean UI.</p>
+                        <div class="tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span></div>
+                    </div>
+                </div>
+
+                <div class="project-card reveal">
+                    <div class="project-img">
+                        <img src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=600&q=80" alt="Library Website">
+                        <div class="project-overlay">
+                            <a href="https://lms-2-b.vercel.app/" class="project-link-btn" target="_blank">🌐 Live</a>
+                            <a href="https://github.com/singhsakshi17478-glitch/LMS-2B" class="project-link-btn" target="_blank">🐙 Code</a>
+                        </div>
+                    </div>
+                    <div class="project-body">
+                        <h3>Library Website</h3>
+                        <p>Library management site with book listings, search functionality, and user-friendly interface.</p>
+                        <div class="tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span></div>
+                    </div>
+                </div>
+
+                <div class="project-card reveal">
+                    <div class="project-img">
+                        <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80" alt="E-Commerce Website">
+                        <div class="project-overlay">
+                            <a href="https://ecommerce-website-tau-rosy.vercel.app" class="project-link-btn" target="_blank">🌐 Live</a>
+                            <a href="https://github.com/singhsakshi17478-glitch/ecommerce-website" class="project-link-btn" target="_blank">🐙 Code</a>
+                        </div>
+                    </div>
+                    <div class="project-body">
+                        <h3>E-Commerce Website</h3>
+                        <p>Fully functional e-commerce site with product listings, shopping cart, and modern UI.</p>
+                        <div class="tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span></div>
+                    </div>
+                </div>
+
+                <div class="project-card reveal">
+                    <div class="project-img">
+                        <img src="https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=600&q=80" alt="Task Reminder Website">
+                        <div class="project-overlay">
+                            <a href="https://task-reminder-website.vercel.app/" class="project-link-btn" target="_blank">🌐 Live</a>
+                            <a href="https://github.com/singhsakshi17478-glitch/task-reminder-website" class="project-link-btn" target="_blank">🐙 Code</a>
+                        </div>
+                    </div>
+                    <div class="project-body">
+                        <h3>Task Reminder Website</h3>
+                        <p>Smart task reminder app to manage daily tasks with reminders, deadlines, and intuitive interface.</p>
+                        <div class="tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Skills ── -->
+    <section id="skills" class="section">
+        <div class="container">
+            <div class="section-label reveal">03 — Abilities</div>
+            <h2 class="section-title reveal">Skills</h2>
+            <div class="skills-grid">
+                <div class="skill-item reveal"><div class="skill-img"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python"></div><span class="skill-name">Python</span></div>
+                <div class="skill-item reveal"><div class="skill-img"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tensorflow/tensorflow-original.svg" alt="ML"></div><span class="skill-name">Machine Learning</span></div>
+                <div class="skill-item reveal"><div class="skill-img"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML"></div><span class="skill-name">HTML</span></div>
+                <div class="skill-item reveal"><div class="skill-img"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" alt="CSS"></div><span class="skill-name">CSS</span></div>
+                <div class="skill-item reveal"><div class="skill-img"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" alt="JS"></div><span class="skill-name">JavaScript</span></div>
+                <div class="skill-item reveal"><div class="skill-img"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" alt="GitHub"></div><span class="skill-name">GitHub</span></div>
+                <div class="skill-item reveal"><div class="skill-img skill-emoji">🧩</div><span class="skill-name">Data Structures</span></div>
+                <div class="skill-item reveal"><div class="skill-img skill-emoji">🧠</div><span class="skill-name">Problem Solving</span></div>
+                <div class="skill-item reveal"><div class="skill-img skill-emoji">📊</div><span class="skill-name">Analytical Thinking</span></div>
+                <div class="skill-item reveal"><div class="skill-img skill-emoji">🗣️</div><span class="skill-name">Communication</span></div>
+                <div class="skill-item reveal"><div class="skill-img skill-emoji">🤝</div><span class="skill-name">Teamwork</span></div>
+                <div class="skill-item reveal"><div class="skill-img skill-emoji">📝</div><span class="skill-name">Documentation</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Education ── -->
+    <section id="education" class="section section-alt">
+        <div class="container">
+            <div class="section-label reveal">04 — Background</div>
+            <h2 class="section-title reveal">Education</h2>
+            <div class="edu-cards">
+
+                <div class="edu-flip-card reveal">
+                    <div class="edu-flip-img">
+                        <img src="https://tse4.mm.bing.net/th/id/OIP._6wLV4rXitK1_xlkCLi6-QHaDS?w=773&h=343&rs=1&pid=ImgDetMain&o=7&rm=3" alt="College">
+                        <div class="edu-flip-badge">2025 – Present</div>
+                    </div>
+                    <div class="edu-flip-body">
+                        <div class="edu-flip-icon">🎓</div>
+                        <h3>BTech Computer Science Engineering</h3>
+                        <p class="edu-flip-sub">AI &amp; ML with Xebia</p>
+                        <p class="edu-flip-desc">Currently pursuing specialization in Artificial Intelligence and Machine Learning. Focused on deep learning, neural networks, and industrial AI applications.</p>
+                        <div class="acc-tags">
+                            <span class="tag">AI / ML</span>
+                            <span class="tag">Deep Learning</span>
+                            <span class="tag">Python</span>
+                            <span class="tag">Data Science</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="edu-flip-card reveal">
+                    <div class="edu-flip-img">
+                        <img src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&q=80" alt="School">
+                        <div class="edu-flip-badge">10th: 2023 · 12th: 2025</div>
+                    </div>
+                    <div class="edu-flip-body">
+                        <div class="edu-flip-icon">🏫</div>
+                        <h3>Shanti Niketan Public School</h3>
+                        <p class="edu-flip-sub">Senior Secondary Education</p>
+                        <p class="edu-flip-desc">Completed schooling with a strong academic foundation in Science and Mathematics, building analytical thinking and discipline.</p>
+                        <div class="acc-tags">
+                            <span class="tag">Science</span>
+                            <span class="tag">Mathematics</span>
+                            <span class="tag">Academics</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Achievements ── -->
+    <section id="achievements" class="section">
+        <div class="container">
+            <div class="section-label reveal">05 — Milestones</div>
+            <h2 class="section-title reveal">Achievements</h2>
+
+            <div class="accordion-list">
+
+                <div class="accordion-item reveal">
+                    <img src="https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=800&q=80" alt="AI ML" class="acc-header-img">
+                    <button class="accordion-trigger" aria-expanded="false">
+                        <div class="acc-left">
+                            <span class="acc-icon">🤖</span>
+                            <div class="acc-title-wrap">
+                                <strong>AI &amp; ML Specialization — Xebia</strong>
+                                <span>Industry Certification Program</span>
+                            </div>
+                        </div>
+                        <span class="acc-arrow">▾</span>
+                    </button>
+                    <div class="accordion-body">
+                        <p>Intensive specialization program focusing on deep learning, neural networks, and industrial ML practices. Gained hands-on experience with real-world datasets and model building under industry mentorship.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item reveal">
+                    <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&q=80" alt="Learning" class="acc-header-img">
+                    <button class="accordion-trigger" aria-expanded="false">
+                        <div class="acc-left">
+                            <span class="acc-icon">📚</span>
+                            <div class="acc-title-wrap">
+                                <strong>Coursework &amp; Continuous Learning</strong>
+                                <span>Academic Modules in Programming &amp; Technology</span>
+                            </div>
+                        </div>
+                        <span class="acc-arrow">▾</span>
+                    </button>
+                    <div class="accordion-body">
+                        <p>Engaged in ongoing professional development through various academic modules in programming and technology. Consistently pursuing new skills to stay aligned with industry trends and emerging tools.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Certificates -->
+            <div class="cert-section">
+                <h3 class="cert-heading reveal">My Certificates</h3>
+                <p class="cert-subtext reveal">Click any card to view the full certificate.</p>
+                <div class="cert-grid">
+                    <div class="cert-card reveal" data-index="0"><div class="cert-icon">🏆</div><p>Python Certificate 1<br><span>Achievement</span></p><button class="btn-view-cert">View</button></div>
+                    <div class="cert-card reveal" data-index="1"><div class="cert-icon">🎓</div><p>Python Certificate 2<br><span>Achievement</span></p><button class="btn-view-cert">View</button></div>
+                    <div class="cert-card reveal" data-index="2"><div class="cert-icon">📊</div><p>DSA Certificate<br><span>Achievement</span></p><button class="btn-view-cert">View</button></div>
+                    <div class="cert-card reveal" data-index="3"><div class="cert-icon">🌟</div><p>Reverse Code Certificate<br><span>Achievement</span></p><button class="btn-view-cert">View</button></div>
+                    <div class="cert-card reveal" data-index="4"><div class="cert-icon">🎖️</div><p>Code Debugging<br><span>Achievement</span></p><button class="btn-view-cert">View</button></div>
+                    <div class="cert-card reveal" data-index="5"><div class="cert-icon">🥇</div><p>Certificate 6<br><span>Achievement</span></p><button class="btn-view-cert">View</button></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Contact ── -->
+    <section id="contact" class="section section-alt">
+        <div class="container contact-inner">
+            <div class="section-label reveal">06 — Connect</div>
+            <h2 class="section-title reveal">Get In Touch</h2>
+            <img src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=900&q=80" alt="Contact" class="contact-banner reveal">
+            <p class="contact-msg reveal">"Open to academic collaboration, learning opportunities, and skill development."</p>
+            <div class="contact-links reveal">
+                <a href="mailto:singhsakshi17478@gmail.com" class="contact-btn">📧 Gmail</a>
+                <a href="https://www.linkedin.com/in/sakshi-singh-15a174375" class="contact-btn" target="_blank">💼 LinkedIn</a>
+                <a href="https://github.com/singhsakshi17478-glitch" class="contact-btn" target="_blank">🐙 GitHub</a>
+                <button class="contact-btn contact-btn-solid" id="download-resume-btn-contact">📄 Download Resume</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Footer ── -->
+    <footer>
+        <div class="container footer-inner">
+            <p class="footer-name">Sakshi<span class="logo-dot">.</span></p>
+            <p class="footer-copy">&copy; 2026 Sakshi Singh · BTech CSE AI &amp; ML</p>
         </div>
     </footer>
 
-    <!-- Video Modal -->
+    <!-- ── Certificate Lightbox ── -->
+    <div id="cert-modal" class="modal" role="dialog" aria-modal="true" aria-label="Certificate Viewer">
+        <div class="modal-overlay" id="cert-modal-overlay"></div>
+        <div class="modal-box">
+            <button class="modal-close" id="cert-close" title="Close">&#10005;</button>
+            <div class="cert-modal-img-wrap">
+                <img id="cert-modal-img" src="" alt="Certificate" />
+                <p id="cert-modal-placeholder" class="cert-placeholder-text">📄 Certificate image will appear here.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="cert-nav-btn" id="cert-prev">&#8592; Previous</button>
+                <span class="cert-counter" id="cert-counter">1 / 6</span>
+                <button class="cert-nav-btn" id="cert-next">Next &#8594;</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Video Modal ── -->
     <div id="video-modal" class="video-modal" role="dialog" aria-modal="true" aria-label="Intro Video">
         <div class="video-modal-overlay" id="video-modal-overlay"></div>
         <div class="video-modal-box">
@@ -369,9 +366,85 @@
             </div>
             <video id="intro-video" controls>
                 <source src="video.mp4" type="video/mp4">
-                Your browser does not support the video tag.
             </video>
             <div class="video-hint">Press Esc to close</div>
+        </div>
+    </div>
+
+    <!-- ── Resume Modal ── -->
+    <div id="resume-modal" class="modal" role="dialog" aria-modal="true" aria-label="Resume Preview">
+        <div class="modal-overlay" id="resume-modal-overlay"></div>
+        <div class="modal-box modal-box-wide">
+            <div class="resume-topbar">
+                <span>📄 Sakshi Singh — Resume</span>
+                <div class="resume-topbar-actions">
+                    <button class="btn-resume-print" id="resume-print-btn">🖨️ Print / Save as PDF</button>
+                    <button class="modal-close" id="resume-close" title="Close">&#10005;</button>
+                </div>
+            </div>
+            <div class="resume-scroll-wrap">
+                <div id="resume-content">
+                    <div class="res-header">
+                        <div class="res-name-block">
+                            <h1>Sakshi Singh</h1>
+                            <p class="res-title">BTech CSE — AI &amp; ML Student</p>
+                        </div>
+                        <div class="res-contact-block">
+                            <p>📧 singhsakshi17478@gmail.com</p>
+                            <p>💼 <a href="https://www.linkedin.com/in/sakshi-singh-15a174375" target="_blank">linkedin.com/in/sakshi-singh-15a174375</a></p>
+                            <p>🐙 <a href="https://github.com/singhsakshi17478-glitch" target="_blank">github.com/singhsakshi17478-glitch</a></p>
+                        </div>
+                    </div>
+                    <div class="res-divider"></div>
+                    <div class="res-section"><h2 class="res-section-title">Objective</h2><p class="res-text">Computer Science Engineering student specializing in Artificial Intelligence and Machine Learning with Xebia. Passionate about learning emerging technologies, strengthening problem-solving abilities, and applying knowledge to real-world challenges.</p></div>
+                    <div class="res-divider"></div>
+                    <div class="res-section">
+                        <h2 class="res-section-title">Education</h2>
+                        <div class="res-edu-item"><div class="res-edu-left"><strong>BTech — Computer Science Engineering</strong><span class="res-edu-sub">Specialization: AI &amp; ML with Xebia</span></div><span class="res-edu-date">2025 – Present</span></div>
+                        <div class="res-edu-item"><div class="res-edu-left"><strong>Shanti Niketan Public School</strong><span class="res-edu-sub">Senior Secondary — Science &amp; Mathematics</span></div><span class="res-edu-date">10th: 2023 · 12th: 2025</span></div>
+                    </div>
+                    <div class="res-divider"></div>
+                    <div class="res-section">
+                        <h2 class="res-section-title">Technical Skills</h2>
+                        <div class="res-skills-wrap">
+                            <div class="res-skill-group"><span class="res-skill-label">Languages</span><span class="res-skill-val">Python, JavaScript, HTML, CSS</span></div>
+                            <div class="res-skill-group"><span class="res-skill-label">Technologies</span><span class="res-skill-val">Machine Learning (Basics), TensorFlow (Basics), GitHub</span></div>
+                            <div class="res-skill-group"><span class="res-skill-label">Concepts</span><span class="res-skill-val">Data Structures (Fundamentals), Problem Solving, Analytical Thinking</span></div>
+                            <div class="res-skill-group"><span class="res-skill-label">Soft Skills</span><span class="res-skill-val">Communication, Teamwork, Documentation &amp; Visualization</span></div>
+                        </div>
+                    </div>
+                    <div class="res-divider"></div>
+                    <div class="res-section">
+                        <h2 class="res-section-title">Projects</h2>
+                        <div class="res-project-item"><div class="res-project-header"><strong>Restaurant Menu Website</strong><span class="res-tag-row">HTML · CSS · JS</span></div><p>Menu website with food categories and interactive layout. <a href="https://restuarent-menu-20.vercel.app/" target="_blank">Live</a> | <a href="https://github.com/singhsakshi17478-glitch/RESTUARENT-MENU-20" target="_blank">GitHub</a></p></div>
+                        <div class="res-project-item"><div class="res-project-header"><strong>Quiz Website</strong><span class="res-tag-row">HTML · CSS · JS</span></div><p>Interactive quiz app with score tracking. <a href="https://quiz-seven-blush.vercel.app/" target="_blank">Live</a> | <a href="https://github.com/singhsakshi17478-glitch/QUIZ" target="_blank">GitHub</a></p></div>
+                        <div class="res-project-item"><div class="res-project-header"><strong>Library Management Website</strong><span class="res-tag-row">HTML · CSS · JS</span></div><p>Library site with book listings and search. <a href="https://lms-2-b.vercel.app/" target="_blank">Live</a> | <a href="https://github.com/singhsakshi17478-glitch/LMS-2B" target="_blank">GitHub</a></p></div>
+                        <div class="res-project-item"><div class="res-project-header"><strong>E-Commerce Website</strong><span class="res-tag-row">HTML · CSS · JS</span></div><p>Full e-commerce site with cart and product listings. <a href="https://ecommerce-website-tau-rosy.vercel.app" target="_blank">Live</a> | <a href="https://github.com/singhsakshi17478-glitch/ecommerce-website" target="_blank">GitHub</a></p></div>
+                        <div class="res-project-item"><div class="res-project-header"><strong>Task Reminder Website</strong><span class="res-tag-row">HTML · CSS · JS</span></div><p>Task manager with reminders and deadlines. <a href="https://task-reminder-website.vercel.app/" target="_blank">Live</a> | <a href="https://github.com/singhsakshi17478-glitch/task-reminder-website" target="_blank">GitHub</a></p></div>
+                    </div>
+                    <div class="res-divider"></div>
+                    <div class="res-section">
+                        <h2 class="res-section-title">Certifications</h2>
+                        <ul class="res-cert-list">
+                            <li>🏆 Python Certificate 1</li>
+                            <li>🎓 Python Certificate 2</li>
+                            <li>📊 DSA Certificate</li>
+                            <li>🌟 Reverse Code Certificate</li>
+                            <li>🎖️ Code Debugging Certificate</li>
+                            <li>🥇 Certificate 6</li>
+                        </ul>
+                    </div>
+                    <div class="res-divider"></div>
+                    <div class="res-section">
+                        <h2 class="res-section-title">Achievements</h2>
+                        <ul class="res-cert-list">
+                            <li>AI &amp; ML Specialization with Xebia — Deep learning, neural networks, and industrial ML practices.</li>
+                            <li>Consistent academic performance and participation in professional development modules.</li>
+                        </ul>
+                    </div>
+                    <div class="res-footer-line"><p>singhsakshi17478@gmail.com &nbsp;|&nbsp; github.com/singhsakshi17478-glitch &nbsp;|&nbsp; linkedin.com/in/sakshi-singh-15a174375</p></div>
+                </div>
+            </div>
         </div>
     </div>
 
