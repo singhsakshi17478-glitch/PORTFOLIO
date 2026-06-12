@@ -11,41 +11,49 @@ document.addEventListener('DOMContentLoaded', () => {
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    // ── Scroll Tracker ───────────────────────────────────────────
-    let scrollY     = window.scrollY;
-    let scrollVY    = 0;
-    let lastScrollY = window.scrollY;
-
-    window.addEventListener('scroll', () => {
-        scrollY = window.scrollY;
-    }, { passive: true });
-
-    // ── Bouncy Ball Physics ───────────────────────────────────────
-    const ball = {
-        x:       window.innerWidth  * 0.55,
-        y:       window.innerHeight * 0.3,
-        vx:      4.5,
-        vy:      2.0,
-        radius:  26,
-        // squash & stretch (scaleX, scaleY)
-        sx:      1,
-        sy:      1,
-        // glow
-        pulse:   0,
-        pulseDir: 1,
-        // trail
-        trail:   [],
-        // bounce impact flash
-        flash:   0,
-        lastBounceWall: ''   // 'floor','ceil','left','right'
+    // ── Mouse Tracker ────────────────────────────────────────────
+    const mouse = {
+        x: window.innerWidth  * 0.5,
+        y: window.innerHeight * 0.5,
+        vx: 0, vy: 0,          // mouse velocity (for speed-glow)
+        px: window.innerWidth  * 0.5,
+        py: window.innerHeight * 0.5,
+        speed: 0
     };
 
-    // physics constants
-    const GRAVITY   = 0.45;   // pulls ball down each frame
-    const BOUNCE    = 0.78;   // energy kept on bounce (1 = perfect elastic)
-    const FRICTION  = 0.992;  // horizontal air resistance
-    const MAX_SPD_Y = 22;
-    const MAX_SPD_X = 16;
+    window.addEventListener('mousemove', e => {
+        mouse.vx = e.clientX - mouse.x;
+        mouse.vy = e.clientY - mouse.y;
+        mouse.speed = Math.hypot(mouse.vx, mouse.vy);
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+    }, { passive: true });
+
+    // Touch support
+    window.addEventListener('touchmove', e => {
+        const t = e.touches[0];
+        mouse.vx = t.clientX - mouse.x;
+        mouse.vy = t.clientY - mouse.y;
+        mouse.speed = Math.hypot(mouse.vx, mouse.vy);
+        mouse.x = t.clientX;
+        mouse.y = t.clientY;
+    }, { passive: true });
+
+    // ── Spring Ball (follows mouse with elastic lag) ──────────────
+    const ball = {
+        x:  window.innerWidth  * 0.5,
+        y:  window.innerHeight * 0.5,
+        vx: 0,
+        vy: 0,
+        radius: 22,
+        pulse:    0,
+        pulseDir: 1,
+        trail: []
+    };
+
+    // Spring constants — tune the feel here
+    const SPRING  = 0.09;   // how strongly it pulls toward cursor (0.04=lazy, 0.15=snappy)
+    const DAMP    = 0.75;   // velocity damping (lower = more wobble)
 
     // ── Particles ────────────────────────────────────────────────
     const particles = Array.from({ length: 70 }, () => ({
@@ -134,10 +142,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function drawAll() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         frame++;
-
-        // ── Scroll velocity ───────────────────────────────────────
-        scrollVY    = scrollY - lastScrollY;
-        lastScrollY = scrollY;
 
         // ── 1 — Dark gradient background ─────────────────────────
         const bgGrad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
@@ -233,28 +237,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         ctx.restore();
 
-        // ── 7 — BOUNCY BALL ──────────────────────────────────────
+        // ── 7 — SPRING BALL (follows mouse) ─────────────────────
 
-        // Scroll impulse — scrolling down gives the ball an upward kick
-        scrollVY    = scrollY - lastScrollY;
-        lastScrollY = scrollY;
-        const kick = Math.max(Math.min(scrollVY, 35), -35);
-        if (Math.abs(kick) > 1.5) {
-            ball.vy -= kick * 1.1;   // kick up when scrolling down
-            ball.vx += kick * 0.25;  // slight horizontal push
-        }
+        // Spring physics — pull toward mouse
+        ball.vx += (mouse.x - ball.x) * SPRING;
+        ball.vy += (mouse.y - ball.y) * SPRING;
 
-        // Gravity — always pulls down
-        ball.vy += GRAVITY;
-
-        // Horizontal friction
-        ball.vx *= FRICTION;
-
-        // Speed caps
-        if (ball.vy >  MAX_SPD_Y) ball.vy =  MAX_SPD_Y;
-        if (ball.vy < -MAX_SPD_Y) ball.vy = -MAX_SPD_Y;
-        if (ball.vx >  MAX_SPD_X) ball.vx =  MAX_SPD_X;
-        if (ball.vx < -MAX_SPD_X) ball.vx = -MAX_SPD_X;
+        // Damping — resistance so it doesn't overshoot forever
+        ball.vx *= DAMP;
+        ball.vy *= DAMP;
 
         // Move
         ball.x += ball.vx;
@@ -263,86 +254,42 @@ document.addEventListener('DOMContentLoaded', () => {
         const r   = ball.radius;
         const spd = Math.hypot(ball.vx, ball.vy);
 
-        // ── Wall bounces with squash & stretch ───────────────────
-        ball.lastBounceWall = '';
-
-        // Floor bounce
-        if (ball.y + r >= canvas.height) {
-            ball.y  = canvas.height - r;
-            ball.vy = -Math.abs(ball.vy) * BOUNCE;
-            ball.vx *= 0.93;
-            // squash on floor hit — wider, shorter
-            ball.sx = 1 + Math.min(Math.abs(ball.vy) * 0.045, 0.55);
-            ball.sy = 1 - Math.min(Math.abs(ball.vy) * 0.045, 0.40);
-            ball.flash = 1;
-            ball.lastBounceWall = 'floor';
-        }
-        // Ceiling bounce
-        if (ball.y - r <= 0) {
-            ball.y  = r;
-            ball.vy =  Math.abs(ball.vy) * BOUNCE;
-            ball.sx = 1 + Math.min(Math.abs(ball.vy) * 0.04, 0.4);
-            ball.sy = 1 - Math.min(Math.abs(ball.vy) * 0.04, 0.3);
-            ball.flash = 1;
-            ball.lastBounceWall = 'ceil';
-        }
-        // Left wall
-        if (ball.x - r <= 0) {
-            ball.x  = r;
-            ball.vx =  Math.abs(ball.vx) * BOUNCE;
-            // squash on side hit — taller, narrower
-            ball.sx = 1 - Math.min(Math.abs(ball.vx) * 0.045, 0.35);
-            ball.sy = 1 + Math.min(Math.abs(ball.vx) * 0.045, 0.45);
-            ball.flash = 1;
-            ball.lastBounceWall = 'left';
-        }
-        // Right wall
-        if (ball.x + r >= canvas.width) {
-            ball.x  = canvas.width - r;
-            ball.vx = -Math.abs(ball.vx) * BOUNCE;
-            ball.sx = 1 - Math.min(Math.abs(ball.vx) * 0.045, 0.35);
-            ball.sy = 1 + Math.min(Math.abs(ball.vx) * 0.045, 0.45);
-            ball.flash = 1;
-            ball.lastBounceWall = 'right';
-        }
-
-        // Return squash/stretch to 1 smoothly (spring back)
-        ball.sx += (1 - ball.sx) * 0.18;
-        ball.sy += (1 - ball.sy) * 0.18;
-
-        // Flash decay
-        ball.flash *= 0.75;
-
-        // ── Trail ────────────────────────────────────────────────
-        ball.trail.push({ x: ball.x, y: ball.y, vx: ball.vx, vy: ball.vy });
-        const trailMax = Math.min(8 + Math.floor(spd * 1.8), 45);
+        // Trail — longer when moving fast
+        ball.trail.push({ x: ball.x, y: ball.y });
+        const trailMax = Math.min(10 + Math.floor(spd * 3), 50);
         if (ball.trail.length > trailMax) ball.trail.shift();
 
+        // Draw trail
         for (let i = 0; i < ball.trail.length; i++) {
             const t     = i / ball.trail.length;
-            const tr    = Math.max(r * t * 0.55, 1);
-            const alpha = t * 0.38;
+            const tr    = Math.max(r * t * 0.7, 1);
+            const alpha = t * 0.4;
             ctx.beginPath();
             ctx.arc(ball.trail[i].x, ball.trail[i].y, tr, 0, Math.PI * 2);
             ctx.fillStyle = `rgba(80,170,255,${alpha})`;
             ctx.fill();
         }
 
-        // ── Glow layers ───────────────────────────────────────────
+        // Pulse glow
         ball.pulse += ball.pulseDir * 0.04;
         if (ball.pulse >  1) ball.pulseDir = -1;
         if (ball.pulse < -1) ball.pulseDir =  1;
-        const glowR     = r * (2.8 + ball.pulse * 0.4);
-        const speedFrac = Math.min(spd / 18, 1);
-        const flashBoost = ball.flash * 0.15;
 
+        // Speed-based brightness — glows brighter when moving fast
+        const mouseSpeedFrac = Math.min(mouse.speed / 30, 1);
+        const ballSpeedFrac  = Math.min(spd / 12, 1);
+        const energy = Math.max(mouseSpeedFrac, ballSpeedFrac);
+
+        const glowR = r * (3.0 + ball.pulse * 0.5 + energy * 1.5);
+
+        // 3-layer glow
         [
-            { r: glowR * 2.6, a: 0.05 + speedFrac * 0.04 + flashBoost, c: '0,150,255' },
-            { r: glowR * 1.6, a: 0.12 + speedFrac * 0.08 + flashBoost, c: '50,130,255' },
-            { r: glowR,       a: 0.26 + speedFrac * 0.12 + flashBoost, c: '130,200,255' },
+            { r: glowR * 3.0, a: 0.04 + energy * 0.06, c: '0,140,255' },
+            { r: glowR * 1.8, a: 0.10 + energy * 0.10, c: '60,160,255' },
+            { r: glowR,       a: 0.22 + energy * 0.18, c: '140,210,255' },
         ].forEach(layer => {
             const g = ctx.createRadialGradient(ball.x, ball.y, 0, ball.x, ball.y, layer.r);
-            g.addColorStop(0, `rgba(${layer.c},${Math.min(layer.a, 0.55)})`);
+            g.addColorStop(0, `rgba(${layer.c},${Math.min(layer.a, 0.6)})`);
             g.addColorStop(1, `rgba(${layer.c},0)`);
             ctx.fillStyle = g;
             ctx.beginPath();
@@ -350,64 +297,52 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.fill();
         });
 
-        // ── Draw ball with squash/stretch ────────────────────────
-        ctx.save();
-        ctx.translate(ball.x, ball.y);
-        ctx.scale(ball.sx, ball.sy);
-
-        // Core gradient (shiny sphere look)
+        // Core ball — shiny sphere
         const coreG = ctx.createRadialGradient(
-            -r * 0.30, -r * 0.30, r * 0.05,
-             0,         0,          r
+            ball.x - r * 0.30, ball.y - r * 0.30, r * 0.05,
+            ball.x,            ball.y,             r
         );
-        coreG.addColorStop(0,   'rgba(230,245,255,0.98)');
-        coreG.addColorStop(0.25,'rgba(120,195,255,0.95)');
-        coreG.addColorStop(0.65,'rgba(30,110,255,0.90)');
-        coreG.addColorStop(1,   'rgba(0,50,200,0.88)');
+        // Shifts from cool blue at rest to bright cyan when fast
+        const rr = Math.floor(20  + energy * 60);
+        const gg = Math.floor(120 + energy * 80);
+        coreG.addColorStop(0,    `rgba(230,245,255,0.98)`);
+        coreG.addColorStop(0.25, `rgba(${rr+100},${gg+60},255,0.95)`);
+        coreG.addColorStop(0.7,  `rgba(${rr},${gg},255,0.90)`);
+        coreG.addColorStop(1,    `rgba(0,50,200,0.85)`);
         ctx.beginPath();
-        ctx.arc(0, 0, r, 0, Math.PI * 2);
+        ctx.arc(ball.x, ball.y, r, 0, Math.PI * 2);
         ctx.fillStyle = coreG;
         ctx.fill();
 
         // Specular highlight
         const specG = ctx.createRadialGradient(
-            -r * 0.32, -r * 0.32, 1,
-            -r * 0.28, -r * 0.28, r * 0.5
+            ball.x - r * 0.32, ball.y - r * 0.32, 1,
+            ball.x - r * 0.28, ball.y - r * 0.28, r * 0.52
         );
-        specG.addColorStop(0, 'rgba(255,255,255,0.92)');
+        specG.addColorStop(0, 'rgba(255,255,255,0.95)');
         specG.addColorStop(1, 'rgba(255,255,255,0)');
         ctx.beginPath();
-        ctx.arc(0, 0, r, 0, Math.PI * 2);
+        ctx.arc(ball.x, ball.y, r, 0, Math.PI * 2);
         ctx.fillStyle = specG;
         ctx.fill();
 
-        // Bottom shadow (gives depth when near floor)
-        if (ball.lastBounceWall === 'floor' || ball.y > canvas.height * 0.7) {
-            const shadowAlpha = Math.min((canvas.height - ball.y) / (canvas.height * 0.3), 0.5) * 0.5;
+        // Thin connecting line from ball to cursor (like a rubber band)
+        const distToCursor = Math.hypot(mouse.x - ball.x, mouse.y - ball.y);
+        if (distToCursor > r * 2) {
             ctx.beginPath();
-            ctx.arc(0, r * 0.6, r * 0.5, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(0,20,80,${shadowAlpha})`;
-            ctx.fill();
-        }
-
-        ctx.restore();
-
-        // ── Impact ring flash on bounce ───────────────────────────
-        if (ball.flash > 0.05) {
-            const ringR = r * (1.4 + (1 - ball.flash) * 1.2);
-            ctx.beginPath();
-            ctx.arc(ball.x, ball.y, ringR, 0, Math.PI * 2);
-            ctx.strokeStyle = `rgba(150,220,255,${ball.flash * 0.6})`;
-            ctx.lineWidth = 2.5;
+            ctx.moveTo(ball.x, ball.y);
+            ctx.lineTo(mouse.x, mouse.y);
+            ctx.strokeStyle = `rgba(120,200,255,${Math.min(0.15, distToCursor / 800)})`;
+            ctx.lineWidth = 1;
             ctx.stroke();
         }
 
-        // ── Web lines to nearby particles ────────────────────────
+        // Web lines to nearby particles
         particles.forEach(p => {
             const d = Math.hypot(p.x - ball.x, p.y - ball.y);
-            if (d < 130) {
+            if (d < 140) {
                 ctx.beginPath();
-                ctx.strokeStyle = `rgba(120,200,255,${0.15 * (1 - d / 130)})`;
+                ctx.strokeStyle = `rgba(120,200,255,${0.18 * (1 - d / 140)})`;
                 ctx.lineWidth = 0.6;
                 ctx.moveTo(ball.x, ball.y);
                 ctx.lineTo(p.x, p.y);
