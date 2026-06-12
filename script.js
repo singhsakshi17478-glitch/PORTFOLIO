@@ -15,45 +15,55 @@ document.addEventListener('DOMContentLoaded', () => {
     const mouse = {
         x: window.innerWidth  * 0.5,
         y: window.innerHeight * 0.5,
-        vx: 0, vy: 0,          // mouse velocity (for speed-glow)
-        px: window.innerWidth  * 0.5,
-        py: window.innerHeight * 0.5,
+        vx: 0, vy: 0,
         speed: 0
     };
-
     window.addEventListener('mousemove', e => {
-        mouse.vx = e.clientX - mouse.x;
-        mouse.vy = e.clientY - mouse.y;
+        mouse.vx    = e.clientX - mouse.x;
+        mouse.vy    = e.clientY - mouse.y;
         mouse.speed = Math.hypot(mouse.vx, mouse.vy);
-        mouse.x = e.clientX;
-        mouse.y = e.clientY;
+        mouse.x     = e.clientX;
+        mouse.y     = e.clientY;
     }, { passive: true });
-
-    // Touch support
     window.addEventListener('touchmove', e => {
         const t = e.touches[0];
-        mouse.vx = t.clientX - mouse.x;
-        mouse.vy = t.clientY - mouse.y;
+        mouse.vx    = t.clientX - mouse.x;
+        mouse.vy    = t.clientY - mouse.y;
         mouse.speed = Math.hypot(mouse.vx, mouse.vy);
-        mouse.x = t.clientX;
-        mouse.y = t.clientY;
+        mouse.x     = t.clientX;
+        mouse.y     = t.clientY;
     }, { passive: true });
 
-    // ── Spring Ball (follows mouse with elastic lag) ──────────────
-    const ball = {
-        x:  window.innerWidth  * 0.5,
-        y:  window.innerHeight * 0.5,
-        vx: 0,
-        vy: 0,
-        radius: 22,
-        pulse:    0,
-        pulseDir: 1,
-        trail: []
-    };
+    // ── Click Ripples ────────────────────────────────────────────
+    const ripples = [];
+    window.addEventListener('click', e => {
+        ripples.push({ x: e.clientX, y: e.clientY, r: 0, maxR: 120, alpha: 1, hue: hueShift });
+    });
+    window.addEventListener('touchstart', e => {
+        const t = e.touches[0];
+        ripples.push({ x: t.clientX, y: t.clientY, r: 0, maxR: 120, alpha: 1, hue: hueShift });
+    }, { passive: true });
 
-    // Spring constants — tune the feel here
-    const SPRING  = 0.09;   // how strongly it pulls toward cursor (0.04=lazy, 0.15=snappy)
-    const DAMP    = 0.75;   // velocity damping (lower = more wobble)
+    // ── Rainbow hue (shared, shifts every frame) ─────────────────
+    let hueShift = 0;
+
+    // ── Multiple Spring Balls ────────────────────────────────────
+    // Ball 0 = main (follows mouse), Ball 1-2 = followers (follow previous)
+    const BALL_COUNT = 3;
+    const BALL_CONFIGS = [
+        { radius: 26, spring: 0.10, damp: 0.75, hueOffset:   0, trailLen: 55, lagFactor: 1.00 },
+        { radius: 16, spring: 0.07, damp: 0.78, hueOffset: 120, trailLen: 38, lagFactor: 0.70 },
+        { radius: 10, spring: 0.05, damp: 0.80, hueOffset: 240, trailLen: 24, lagFactor: 0.50 },
+    ];
+    const balls = BALL_CONFIGS.map((cfg, i) => ({
+        x:  window.innerWidth  * (0.4 + i * 0.1),
+        y:  window.innerHeight * 0.5,
+        vx: 0, vy: 0,
+        spinAngle: 0,
+        pulse: 0, pulseDir: 1,
+        trail: [],
+        cfg
+    }));
 
     // ── Particles ────────────────────────────────────────────────
     const particles = Array.from({ length: 70 }, () => ({
@@ -237,118 +247,178 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         ctx.restore();
 
-        // ── 7 — SPRING BALL (follows mouse) ─────────────────────
+        // ── 7 — MULTI BALL + RIPPLES ─────────────────────────────
 
-        // Spring physics — pull toward mouse
-        ball.vx += (mouse.x - ball.x) * SPRING;
-        ball.vy += (mouse.y - ball.y) * SPRING;
+        // Advance global hue (full rainbow cycle ~6 seconds)
+        hueShift = (hueShift + 0.25) % 360;
 
-        // Damping — resistance so it doesn't overshoot forever
-        ball.vx *= DAMP;
-        ball.vy *= DAMP;
+        // Draw click ripples
+        for (let i = ripples.length - 1; i >= 0; i--) {
+            const rp = ripples[i];
+            rp.r     += 4.5;
+            rp.alpha -= 0.022;
+            if (rp.alpha <= 0) { ripples.splice(i, 1); continue; }
 
-        // Move
-        ball.x += ball.vx;
-        ball.y += ball.vy;
-
-        const r   = ball.radius;
-        const spd = Math.hypot(ball.vx, ball.vy);
-
-        // Trail — longer when moving fast
-        ball.trail.push({ x: ball.x, y: ball.y });
-        const trailMax = Math.min(10 + Math.floor(spd * 3), 50);
-        if (ball.trail.length > trailMax) ball.trail.shift();
-
-        // Draw trail
-        for (let i = 0; i < ball.trail.length; i++) {
-            const t     = i / ball.trail.length;
-            const tr    = Math.max(r * t * 0.7, 1);
-            const alpha = t * 0.4;
-            ctx.beginPath();
-            ctx.arc(ball.trail[i].x, ball.trail[i].y, tr, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(80,170,255,${alpha})`;
-            ctx.fill();
-        }
-
-        // Pulse glow
-        ball.pulse += ball.pulseDir * 0.04;
-        if (ball.pulse >  1) ball.pulseDir = -1;
-        if (ball.pulse < -1) ball.pulseDir =  1;
-
-        // Speed-based brightness — glows brighter when moving fast
-        const mouseSpeedFrac = Math.min(mouse.speed / 30, 1);
-        const ballSpeedFrac  = Math.min(spd / 12, 1);
-        const energy = Math.max(mouseSpeedFrac, ballSpeedFrac);
-
-        const glowR = r * (3.0 + ball.pulse * 0.5 + energy * 1.5);
-
-        // 3-layer glow
-        [
-            { r: glowR * 3.0, a: 0.04 + energy * 0.06, c: '0,140,255' },
-            { r: glowR * 1.8, a: 0.10 + energy * 0.10, c: '60,160,255' },
-            { r: glowR,       a: 0.22 + energy * 0.18, c: '140,210,255' },
-        ].forEach(layer => {
-            const g = ctx.createRadialGradient(ball.x, ball.y, 0, ball.x, ball.y, layer.r);
-            g.addColorStop(0, `rgba(${layer.c},${Math.min(layer.a, 0.6)})`);
-            g.addColorStop(1, `rgba(${layer.c},0)`);
-            ctx.fillStyle = g;
-            ctx.beginPath();
-            ctx.arc(ball.x, ball.y, layer.r, 0, Math.PI * 2);
-            ctx.fill();
-        });
-
-        // Core ball — shiny sphere
-        const coreG = ctx.createRadialGradient(
-            ball.x - r * 0.30, ball.y - r * 0.30, r * 0.05,
-            ball.x,            ball.y,             r
-        );
-        // Shifts from cool blue at rest to bright cyan when fast
-        const rr = Math.floor(20  + energy * 60);
-        const gg = Math.floor(120 + energy * 80);
-        coreG.addColorStop(0,    `rgba(230,245,255,0.98)`);
-        coreG.addColorStop(0.25, `rgba(${rr+100},${gg+60},255,0.95)`);
-        coreG.addColorStop(0.7,  `rgba(${rr},${gg},255,0.90)`);
-        coreG.addColorStop(1,    `rgba(0,50,200,0.85)`);
-        ctx.beginPath();
-        ctx.arc(ball.x, ball.y, r, 0, Math.PI * 2);
-        ctx.fillStyle = coreG;
-        ctx.fill();
-
-        // Specular highlight
-        const specG = ctx.createRadialGradient(
-            ball.x - r * 0.32, ball.y - r * 0.32, 1,
-            ball.x - r * 0.28, ball.y - r * 0.28, r * 0.52
-        );
-        specG.addColorStop(0, 'rgba(255,255,255,0.95)');
-        specG.addColorStop(1, 'rgba(255,255,255,0)');
-        ctx.beginPath();
-        ctx.arc(ball.x, ball.y, r, 0, Math.PI * 2);
-        ctx.fillStyle = specG;
-        ctx.fill();
-
-        // Thin connecting line from ball to cursor (like a rubber band)
-        const distToCursor = Math.hypot(mouse.x - ball.x, mouse.y - ball.y);
-        if (distToCursor > r * 2) {
-            ctx.beginPath();
-            ctx.moveTo(ball.x, ball.y);
-            ctx.lineTo(mouse.x, mouse.y);
-            ctx.strokeStyle = `rgba(120,200,255,${Math.min(0.15, distToCursor / 800)})`;
-            ctx.lineWidth = 1;
-            ctx.stroke();
-        }
-
-        // Web lines to nearby particles
-        particles.forEach(p => {
-            const d = Math.hypot(p.x - ball.x, p.y - ball.y);
-            if (d < 140) {
+            // 3 expanding rings per click
+            for (let k = 0; k < 3; k++) {
+                const kr = rp.r - k * 18;
+                if (kr < 0) continue;
                 ctx.beginPath();
-                ctx.strokeStyle = `rgba(120,200,255,${0.18 * (1 - d / 140)})`;
-                ctx.lineWidth = 0.6;
-                ctx.moveTo(ball.x, ball.y);
-                ctx.lineTo(p.x, p.y);
+                ctx.arc(rp.x, rp.y, kr, 0, Math.PI * 2);
+                ctx.strokeStyle = `hsla(${(rp.hue + k * 30) % 360},100%,70%,${rp.alpha * (1 - k * 0.25)})`;
+                ctx.lineWidth   = 2 - k * 0.5;
                 ctx.stroke();
             }
-        });
+        }
+
+        // Each ball follows the one before it (chain)
+        // Ball 0 → mouse, Ball 1 → Ball 0, Ball 2 → Ball 1
+        for (let i = 0; i < balls.length; i++) {
+            const b   = balls[i];
+            const cfg = b.cfg;
+
+            // Target: ball 0 follows mouse, rest follow previous ball
+            const tx = i === 0 ? mouse.x : balls[i - 1].x;
+            const ty = i === 0 ? mouse.y : balls[i - 1].y;
+
+            // Spring force
+            b.vx += (tx - b.x) * cfg.spring;
+            b.vy += (ty - b.y) * cfg.spring;
+
+            // Damping
+            b.vx *= cfg.damp;
+            b.vy *= cfg.damp;
+
+            // Move
+            b.x += b.vx;
+            b.y += b.vy;
+
+            const spd     = Math.hypot(b.vx, b.vy);
+            const energy  = Math.min(Math.max(mouse.speed, spd * 3) / 35, 1);
+            const ballHue = (hueShift + cfg.hueOffset) % 360;
+
+            // Spin — faster when moving fast
+            b.spinAngle += 0.02 + spd * 0.015;
+
+            // Trail
+            b.trail.push({ x: b.x, y: b.y, hue: ballHue });
+            const tMax = Math.min(cfg.trailLen + Math.floor(spd * 2), cfg.trailLen + 20);
+            if (b.trail.length > tMax) b.trail.shift();
+
+            // Draw trail (long comet tail)
+            for (let j = 0; j < b.trail.length; j++) {
+                const t     = j / b.trail.length;
+                const tr    = Math.max(cfg.radius * t * 0.75, 1);
+                const alpha = t * 0.5;
+                const tHue  = (b.trail[j].hue + (1 - t) * 30) % 360;
+                ctx.beginPath();
+                ctx.arc(b.trail[j].x, b.trail[j].y, tr, 0, Math.PI * 2);
+                ctx.fillStyle = `hsla(${tHue},100%,70%,${alpha})`;
+                ctx.fill();
+            }
+
+            // Pulse glow
+            b.pulse += b.pulseDir * (0.03 + energy * 0.04);
+            if (b.pulse >  1) b.pulseDir = -1;
+            if (b.pulse < -1) b.pulseDir =  1;
+            const glowR = cfg.radius * (3.2 + b.pulse * 0.6 + energy * 1.8);
+
+            // Multi-layer neon glow
+            [
+                { mult: 3.0, a: 0.04 + energy * 0.05 },
+                { mult: 1.8, a: 0.10 + energy * 0.10 },
+                { mult: 1.0, a: 0.22 + energy * 0.20 },
+            ].forEach(layer => {
+                const lr = glowR * layer.mult;
+                const g  = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, lr);
+                g.addColorStop(0, `hsla(${ballHue},100%,65%,${Math.min(layer.a, 0.6)})`);
+                g.addColorStop(1, `hsla(${ballHue},100%,65%,0)`);
+                ctx.fillStyle = g;
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, lr, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Draw ball with spin (rotated inner pattern)
+            ctx.save();
+            ctx.translate(b.x, b.y);
+            ctx.rotate(b.spinAngle);
+
+            // Core gradient — rainbow shifted
+            const hue2 = (ballHue + 30) % 360;
+            const cG   = ctx.createRadialGradient(
+                -cfg.radius * 0.3, -cfg.radius * 0.3, cfg.radius * 0.05,
+                0, 0, cfg.radius
+            );
+            cG.addColorStop(0,    `hsla(${(ballHue + 60) % 360},100%,95%,0.98)`);
+            cG.addColorStop(0.25, `hsla(${ballHue},100%,75%,0.95)`);
+            cG.addColorStop(0.7,  `hsla(${hue2},100%,45%,0.90)`);
+            cG.addColorStop(1,    `hsla(${(hue2 + 40) % 360},100%,25%,0.88)`);
+            ctx.beginPath();
+            ctx.arc(0, 0, cfg.radius, 0, Math.PI * 2);
+            ctx.fillStyle = cG;
+            ctx.fill();
+
+            // Inner spin ring (gives rotation feel)
+            ctx.beginPath();
+            ctx.arc(0, 0, cfg.radius * 0.6, Math.PI * 0.1, Math.PI * 1.1);
+            ctx.strokeStyle = `hsla(${(ballHue + 180) % 360},100%,90%,0.35)`;
+            ctx.lineWidth   = cfg.radius * 0.18;
+            ctx.lineCap     = 'round';
+            ctx.stroke();
+
+            // Specular highlight
+            const sG = ctx.createRadialGradient(
+                -cfg.radius * 0.32, -cfg.radius * 0.32, 1,
+                -cfg.radius * 0.28, -cfg.radius * 0.28, cfg.radius * 0.52
+            );
+            sG.addColorStop(0, 'rgba(255,255,255,0.95)');
+            sG.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.beginPath();
+            ctx.arc(0, 0, cfg.radius, 0, Math.PI * 2);
+            ctx.fillStyle = sG;
+            ctx.fill();
+
+            ctx.restore();
+
+            // Web lines to nearby particles
+            particles.forEach(p => {
+                const d = Math.hypot(p.x - b.x, p.y - b.y);
+                if (d < 120) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = `hsla(${ballHue},100%,70%,${0.15 * (1 - d / 120)})`;
+                    ctx.lineWidth   = 0.5;
+                    ctx.moveTo(b.x, b.y);
+                    ctx.lineTo(p.x, p.y);
+                    ctx.stroke();
+                }
+            });
+
+            // Thin rubber-band line from main ball to cursor
+            if (i === 0) {
+                const dc = Math.hypot(mouse.x - b.x, mouse.y - b.y);
+                if (dc > cfg.radius * 2.5) {
+                    ctx.beginPath();
+                    ctx.moveTo(b.x, b.y);
+                    ctx.lineTo(mouse.x, mouse.y);
+                    ctx.strokeStyle = `hsla(${ballHue},100%,70%,${Math.min(0.18, dc / 700)})`;
+                    ctx.lineWidth   = 1;
+                    ctx.stroke();
+                }
+            }
+
+            // Ball-to-ball connector line
+            if (i > 0) {
+                const prev = balls[i - 1];
+                const dc   = Math.hypot(prev.x - b.x, prev.y - b.y);
+                ctx.beginPath();
+                ctx.moveTo(prev.x, prev.y);
+                ctx.lineTo(b.x, b.y);
+                ctx.strokeStyle = `hsla(${ballHue},100%,70%,${Math.min(0.22, dc / 400)})`;
+                ctx.lineWidth   = 0.8;
+                ctx.stroke();
+            }
+        }
 
         requestAnimationFrame(drawAll);
     }

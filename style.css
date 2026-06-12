@@ -10,6 +10,37 @@
     --accent: #0066cc;
     --ease:   cubic-bezier(0.4, 0, 0.2, 1);
     --nav-h:  72px;
+    /* night (default) */
+    --bg-page:      #0a0f1e;
+    --bg-canvas-op: 1;
+    --nav-bg:       rgba(5,13,31,0.85);
+    --nav-border:   rgba(255,255,255,0.08);
+    --nav-link:     rgba(255,255,255,0.6);
+    --nav-link-act: #ffffff;
+    --nav-link-bg:  rgba(255,255,255,0.1);
+    --section-bg:   rgba(255,255,255,0.93);
+    --section-alt:  rgba(238,243,252,0.95);
+    --logo-color:   #ffffff;
+    --footer-bg:    rgba(0,15,40,0.95);
+    --footer-border:rgba(255,255,255,0.08);
+    --orb-op:       1;
+}
+
+/* ── Day Mode Overrides ──────────────────────────────────────────── */
+body.day-mode {
+    --bg-page:      #e8eef8;
+    --bg-canvas-op: 0.18;
+    --nav-bg:       rgba(255,255,255,0.95);
+    --nav-border:   rgba(0,33,71,0.12);
+    --nav-link:     #64748b;
+    --nav-link-act: #002147;
+    --nav-link-bg:  rgba(0,33,71,0.07);
+    --section-bg:   rgba(255,255,255,0.97);
+    --section-alt:  rgba(240,245,255,0.98);
+    --logo-color:   #002147;
+    --footer-bg:    #002147;
+    --footer-border:rgba(0,0,0,0.08);
+    --orb-op:       0.35;
 }
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -19,9 +50,10 @@ html { scroll-behavior: smooth; font-size: 16px; }
 body {
     font-family: 'Inter', sans-serif;
     color: var(--text);
-    background: #0a0f1e;
+    background: var(--bg-page);
     overflow-x: hidden;
     line-height: 1.65;
+    transition: background 0.5s var(--ease);
 }
 
 /* ── Canvas (full-screen animated layer) ────────────────────────── */
@@ -30,7 +62,8 @@ body {
     width: 100%; height: 100%;
     z-index: 0;
     pointer-events: none;
-    opacity: 1;
+    opacity: var(--bg-canvas-op);
+    transition: opacity 0.5s var(--ease);
 }
 
 /* ── Floating CSS Orbs (always visible, CSS-powered) ────────────── */
@@ -39,6 +72,8 @@ body {
     z-index: 0;
     pointer-events: none;
     overflow: hidden;
+    opacity: var(--orb-op);
+    transition: opacity 0.5s var(--ease);
 }
 .bg-orb {
     position: absolute;
@@ -93,12 +128,12 @@ body {
 #navbar {
     position: fixed; top: 0; left: 0; right: 0;
     height: var(--nav-h);
-    background: rgba(5, 13, 31, 0.85);
+    background: var(--nav-bg);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid var(--nav-border);
     z-index: 1000;
-    transition: box-shadow 0.3s var(--ease);
+    transition: box-shadow 0.3s var(--ease), background 0.5s var(--ease), border-color 0.5s var(--ease);
 }
 #navbar.scrolled { box-shadow: 0 4px 30px rgba(0,0,0,0.4); }
 
@@ -116,9 +151,10 @@ body {
 .logo {
     font-size: 1.6rem;
     font-weight: 800;
-    color: #fff;
+    color: var(--logo-color);
     letter-spacing: -0.5px;
     white-space: nowrap;
+    transition: color 0.4s var(--ease);
 }
 .logo-dot { color: #4da6ff; }
 
@@ -130,7 +166,7 @@ body {
 }
 .nav-links a {
     text-decoration: none;
-    color: rgba(255,255,255,0.6);
+    color: var(--nav-link);
     font-size: 0.82rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -140,8 +176,8 @@ body {
     transition: color 0.2s, background 0.2s;
 }
 .nav-links a:hover, .nav-links a.active {
-    color: #fff;
-    background: rgba(255,255,255,0.1);
+    color: var(--nav-link-act);
+    background: var(--nav-link-bg);
 }
 
 .nav-right { display: flex; align-items: center; gap: 0.75rem; }
@@ -215,25 +251,22 @@ body {
     padding: 3.5rem 0;
     background: transparent;
 }
-.section-alt {
-    background: transparent;
-}
+.section-alt { background: transparent; }
 
 /* Section inner content background for readability */
-.section .container {
-    position: relative;
-}
+.section .container { position: relative; }
 .section .container::before {
     content: '';
     position: absolute;
     inset: -2rem -2rem;
-    background: rgba(255,255,255,0.93);
+    background: var(--section-bg);
     border-radius: 18px;
     z-index: -1;
     box-shadow: 0 4px 40px rgba(0,0,0,0.12);
+    transition: background 0.5s var(--ease);
 }
 .section-alt .container::before {
-    background: rgba(238,243,252,0.95);
+    background: var(--section-alt);
 }
 
 .container {
@@ -814,10 +847,11 @@ main {
 
 /* ── Footer ──────────────────────────────────────────────────────── */
 footer {
-    background: rgba(0,15,40,0.95);
+    background: var(--footer-bg);
     padding: 2.5rem 0;
     position: relative; z-index: 1;
-    border-top: 1px solid rgba(255,255,255,0.08);
+    border-top: 1px solid var(--footer-border);
+    transition: background 0.5s var(--ease);
 }
 .footer-inner {
     display: flex;
@@ -1110,4 +1144,59 @@ footer {
     .skills-grid { grid-template-columns: repeat(2, 1fr); }
     .cert-grid { grid-template-columns: repeat(2, 1fr); }
     .section-title { font-size: 1.5rem; }
+}
+
+/* ── Day / Night Toggle ──────────────────────────────────────────── */
+.btn-theme-toggle {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 50px;
+    width: 44px;
+    height: 26px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    line-height: 1;
+    transition: background 0.3s, border-color 0.3s, transform 0.2s;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+}
+.btn-theme-toggle:hover {
+    background: rgba(255,255,255,0.22);
+    transform: scale(1.1);
+}
+.theme-icon {
+    display: block;
+    transition: transform 0.4s var(--ease), opacity 0.3s;
+    transform-origin: center;
+}
+
+/* Day mode toggle styling */
+body.day-mode .btn-theme-toggle {
+    background: rgba(0,33,71,0.08);
+    border-color: rgba(0,33,71,0.18);
+}
+body.day-mode .btn-theme-toggle:hover {
+    background: rgba(0,33,71,0.14);
+}
+
+/* Mobile nav in day mode */
+body.day-mode .nav-links {
+    background: rgba(255,255,255,0.97);
+    border-bottom-color: rgba(0,33,71,0.1);
+}
+body.day-mode .mobile-menu-btn span {
+    background: var(--navy);
+}
+
+/* Smooth global transition on mode switch */
+body, #navbar, .section .container::before,
+.section-alt .container::before, footer,
+.bg-orbs, #bg-canvas {
+    transition-property: background, background-color, border-color, color, opacity;
+    transition-duration: 0.45s;
+    transition-timing-function: var(--ease);
 }
